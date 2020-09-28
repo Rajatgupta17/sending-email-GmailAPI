@@ -1,9 +1,20 @@
 const fs = require('fs');
 const readline = require('readline');
-const {google} = require('googleapis');//GMAIL api declaration
+const {google} = require('googleapis');//google api library
 var express=require("express");
 var app=express();
 var Base64=require("js-base64");
+
+//STEPS TO USE THE APP
+//first user has to create a file named as 'credentials.json' 
+//as the credentials given by GMAIL will be stored here, these should not be shared with anyone
+//as it contains client_id and client_Secret keys.
+
+//After storing credentials when the app will run it will ask user to visit a link
+//and after visiting the link user will be given a code and the code is to be pasted on the console
+//then a file named 'token.json' will be created and whole authorization process will be completed
+
+//Last Step contains sending emails, which can be sent using sendEmail function created below
 
 
 // If modifying these scopes, delete token.json.
@@ -86,10 +97,13 @@ function listLabels(auth) {
     if (err) return console.log('The API returned an error: ' + err);
   });
 }
-
+//Main function for sending mail
 async function sendEmail(auth, mail){
     const gmail=google.gmail({version:'v1', auth});
+    //The whole body of email is converted to Base64 url encoding
+    //thus this line is used for conversion of string to base64 url
     var encodeMessage = Base64.encodeURI(mail);
+    //this is the function called through Gmail API to send the message
     let email=await gmail.users.messages.send({
         userId:'me',
         resource:{
@@ -98,6 +112,7 @@ async function sendEmail(auth, mail){
     })
     return email;
 }
+//joining multi parts of an email into single one
 function makeMessage(from,to,subject,body){
   var mailParts=[
     `From:${from}`,
@@ -108,9 +123,14 @@ function makeMessage(from,to,subject,body){
   var mail=mailParts.join('\n');
   return mail
 }
-
+//route for sending email
 app.get('/sendmail', async (req,res,next)=>{
-  
+  //using this makeMessage function , we need to enter the four parameters from(the mail id from where the mail is sent), 
+  //to(the mail id to which the mail is to be sent)
+  //subject of the mail
+  //main message of the mail
+  // if we include front end part also then we can do this task through a form also 
+  //by having a POST request
   var mail=makeMessage("rajat456bansal@gmail.com","rajat456bansal@gmail.com","Hello", "Hello! How are you?");
   try{
     let email=await sendEmail(oAuth2Client,mail);
@@ -119,7 +139,8 @@ app.get('/sendmail', async (req,res,next)=>{
   catch(error){
     console.log(error);
   }
-})
+});
+//app.listen is used to assgn a port on which the api will run
 app.listen(3000, ()=>{
   console.log("Server started");
 })
