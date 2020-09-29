@@ -14,7 +14,9 @@ var Base64=require("js-base64");
 //and after visiting the link user will be given a code and the code is to be pasted on the console
 //then a file named 'token.json' will be created and whole authorization process will be completed
 
-//Last Step contains sending emails, which can be sent using sendEmail function created below
+//When the server is started using "node index.js" then one can open the url "localhost://3000/sendmail" then a mail will be sent
+//according to the data given in it.
+
 
 
 // If modifying these scopes, delete token.json.
